@@ -79,13 +79,11 @@ func run(pass *analysis.Pass) (interface{}, error) {
 
 		var tickerStop ast.Expr
 		for _, stmt := range stmts[1:] {
-			switch stmt.(type) {
+			switch stmt := stmt.(type) {
 			case *ast.DeferStmt:
-				tickerStop = stmt.(*ast.DeferStmt).Call.Fun
-				break
+				tickerStop = stmt.Call.Fun
 			case *ast.ExprStmt:
-				tickerStop = stmt.(*ast.ExprStmt).X
-				break
+				tickerStop = stmt.X
 			}
 		}
 
