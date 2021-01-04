@@ -1,6 +1,6 @@
 # tickeryzer
 
-![Build status](https://github.com/orijtech/tickeryzer/workflows/Go/badge.svg?branch=master)
+![Build status](https://github.com/orijtech/tickeryzer/workflows/Go/badge.svg?branch=main)
 
 Package tickeryzer defines an [Analyzer](analyzer_link) that checks missing (*time.Ticker).Stop() call,
 which can cause resources leak.
