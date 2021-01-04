@@ -77,20 +77,20 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			return true // could not find the *time.Ticker in the assignment.
 		}
 
-		var tickerStop ast.Expr
 		for _, stmt := range stmts[1:] {
 			switch stmt := stmt.(type) {
 			case *ast.DeferStmt:
-				tickerStop = stmt.Call.Fun
+				if root := rootIdent(stmt.Call.Fun); root.Obj == ticker.Obj {
+					return true
+				}
 			case *ast.ExprStmt:
-				tickerStop = stmt.X
+				if root := rootIdent(stmt.X); root.Obj == ticker.Obj {
+					return true
+				}
 			}
 		}
 
-		root := rootIdent(tickerStop)
-		if root == nil || ticker.Obj != root.Obj {
-			pass.ReportRangef(ticker, "missing %s.Stop() call", ticker.Name)
-		}
+		pass.ReportRangef(ticker, "missing %s.Stop() call", ticker.Name)
 		return true
 	})
 	return nil, nil
