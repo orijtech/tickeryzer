@@ -43,7 +43,7 @@ var Analyzer = &analysis.Analyzer{
 func run(pass *analysis.Pass) (interface{}, error) {
 	inspect := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 
-	// Fast path: if the package doesn't import net/http,
+	// Fast path: if the package doesn't import time,
 	// skip the traversal.
 	if !imports(pass.Pkg, "time") {
 		return nil, nil
