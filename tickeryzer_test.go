@@ -26,3 +26,8 @@ func Test(t *testing.T) {
 	testdata := analysistest.TestData()
 	analysistest.RunWithSuggestedFixes(t, testdata, tickeryzer.Analyzer, "a")
 }
+
+func TestMainGoroutine(t *testing.T) {
+	testdata := analysistest.TestData()
+	analysistest.RunWithSuggestedFixes(t, testdata, tickeryzer.Analyzer, "b")
+}

@@ -56,6 +56,12 @@ func run(pass *analysis.Pass) (interface{}, error) {
 		if !push {
 			return true
 		}
+
+		// Returning from main.main terminates the process, so we don't have to check.
+		if fd, ok := stack[1].(*ast.FuncDecl); ok && fd.Name.Name == "main" && pass.Pkg.Name() == "main" {
+			return false
+		}
+
 		call := n.(*ast.CallExpr)
 		if !isTimeNewTicker(pass.TypesInfo, call) {
 			return true // the function call is not related to this check.
