@@ -2,8 +2,11 @@ package p
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
+
+var m sync.Mutex
 
 func f() {
 	ticker := time.NewTicker(time.Second) // want `missing ticker.Stop\(\) call`
@@ -29,6 +32,16 @@ func h() {
 	}()
 
 	for t := range ticker1.C {
+		fmt.Println("Current time: ", t)
+	}
+}
+
+func i() {
+	ticker := time.NewTicker(time.Second) // want `missing ticker.Stop\(\) call`
+	m.Lock()
+	defer m.Unlock()
+
+	for t := range ticker.C {
 		fmt.Println("Current time: ", t)
 	}
 }
