@@ -1,6 +1,7 @@
 package p
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"time"
@@ -43,6 +44,17 @@ func i() {
 
 	for t := range ticker.C {
 		fmt.Println("Current time: ", t)
+	}
+}
+
+func j(ctx context.Context) {
+	ticker := time.NewTicker(time.Second) // OK
+	for {
+		select {
+		case <-ctx.Done():
+			ticker.Stop()
+		default:
+		}
 	}
 }
 
