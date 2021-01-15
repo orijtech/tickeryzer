@@ -83,26 +83,49 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			return true // could not find the *time.Ticker in the assignment.
 		}
 
-		for _, stmt := range stmts[1:] {
-			var root *ast.Ident
-			switch stmt := stmt.(type) {
-			case *ast.DeferStmt:
-				root = rootIdent(stmt.Call.Fun)
-			case *ast.ExprStmt:
-				root = rootIdent(stmt.X)
-			}
-			if root == nil {
-				continue
-			}
-			if root.Obj == ticker.Obj {
-				return true
-			}
+		if hasTickerStopCall(pass, ticker, stmts[1:]) {
+			return true
 		}
 
 		pass.ReportRangef(ticker, "missing %s.Stop() call", ticker.Name)
 		return true
 	})
 	return nil, nil
+}
+
+func hasTickerStopCall(pass *analysis.Pass, ticker *ast.Ident, stmts []ast.Stmt) bool {
+	for _, stmt := range stmts {
+		var root *ast.Ident
+		switch stmt := stmt.(type) {
+		case *ast.DeferStmt:
+			root = rootIdent(stmt.Call.Fun)
+		case *ast.ExprStmt:
+			root = rootIdent(stmt.X)
+		case *ast.ForStmt:
+			if hasTickerStopCall(pass, ticker, stmt.Body.List) {
+				return true
+			}
+		case *ast.SelectStmt:
+			if hasTickerStopCall(pass, ticker, stmt.Body.List) {
+				return true
+			}
+		case *ast.CommClause:
+			if hasTickerStopCall(pass, ticker, stmt.Body) {
+				return true
+			}
+		case *ast.CaseClause:
+			if hasTickerStopCall(pass, ticker, stmt.Body) {
+				return true
+			}
+		}
+		if root == nil {
+			continue
+		}
+		if root.Obj == ticker.Obj {
+			return true
+		}
+	}
+	return false
 }
 
 func isTimeNewTicker(info *types.Info, expr *ast.CallExpr) bool {
@@ -144,6 +167,8 @@ func rootIdent(n ast.Node) *ast.Ident {
 	switch n := n.(type) {
 	case *ast.SelectorExpr:
 		return rootIdent(n.X)
+	case *ast.CallExpr:
+		return rootIdent(n.Fun)
 	case *ast.Ident:
 		return n
 	default:
