@@ -84,15 +84,18 @@ func run(pass *analysis.Pass) (interface{}, error) {
 		}
 
 		for _, stmt := range stmts[1:] {
+			var root *ast.Ident
 			switch stmt := stmt.(type) {
 			case *ast.DeferStmt:
-				if root := rootIdent(stmt.Call.Fun); root.Obj == ticker.Obj {
-					return true
-				}
+				root = rootIdent(stmt.Call.Fun)
 			case *ast.ExprStmt:
-				if root := rootIdent(stmt.X); root.Obj == ticker.Obj {
-					return true
-				}
+				root = rootIdent(stmt.X)
+			}
+			if root == nil {
+				continue
+			}
+			if root.Obj == ticker.Obj {
+				return true
 			}
 		}
 
