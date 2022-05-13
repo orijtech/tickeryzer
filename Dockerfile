@@ -1,4 +1,4 @@
-FROM golang as builder
+FROM golang:latest as builder
 
 # Add Code and install
 ADD . /go/src/github.com/orijtech/tickeryzer/
