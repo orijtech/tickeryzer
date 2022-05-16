@@ -7,19 +7,25 @@ which can cause resources leak.
 
 ## Installation
 
-With Go modules:
+### With Go modules:
 
 ```sh
 go get github.com/orijtech/tickeryzer/cmd/tickeryzer
 ```
 
-Without Go modules:
+### Without Go modules:
 
 ```sh
-$ cd $GOPATH/src/github.com/orijtech/tickeryzer
-$ git checkout v0.0.1
-$ go get
-$ install ./cmd/tickeryzer
+cd $GOPATH/src/github.com/orijtech/tickeryzer
+git checkout v0.0.1
+go get
+install ./cmd/tickeryzer
+```
+
+### With Docker:
+
+```sh
+docker pull ghcr.io/orijtech/tickeryzer:latest
 ```
 
 ## Usage
@@ -30,13 +36,18 @@ other Go tools work.
 Example:
 
 ```sh
-$ tickeryzer github.com/orijtech/tickeryzer/testdata/src/a
+tickeryzer github.com/orijtech/tickeryzer/testdata/src/a
 ```
 
 or:
 
 ```sh
-$ tickeryzer ./testdata/src/a/a.go
+tickeryzer ./testdata/src/a/a.go
+```
+
+With Docker:
+```sh
+docker run --volume $(pwd):/app --workdir /app ghcr.io/orijtech/tickeryzer:latest ./testdata/src/a/a.go
 ```
 
 Sample output:
