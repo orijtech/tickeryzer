@@ -1,11 +1,11 @@
-FROM golang:latest as builder
+FROM golang:alpine as builder
 
 # Add Code and install
 ADD . /go/src/github.com/orijtech/tickeryzer/
 WORKDIR /go/src/github.com/orijtech/tickeryzer/cmd/tickeryzer
 RUN go install -v
 
-FROM alpine:latest
+FROM golang:alpine
 COPY --from=builder /go/bin/tickeryzer /go/bin/tickeryzer
 # Setup work path
 WORKDIR /data
